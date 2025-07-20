@@ -13,21 +13,31 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
+        <!-- Name Field (Keep Existing) -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
+        <!-- New Username Field -->
+        <div>
+            <x-input-label for="username" :value="__('Username')" />
+            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full" 
+                         :value="old('username', $user->username)" required autocomplete="username" />
+            <x-input-error class="mt-2" :messages="$errors->get('username')" />
+        </div>
+
+        <!-- Email Field (Keep Existing) -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
+            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="email" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
-
+            
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
                     <p class="text-sm mt-2 text-gray-800">
@@ -43,6 +53,33 @@
                             {{ __('A new verification link has been sent to your email address.') }}
                         </p>
                     @endif
+                </div>
+            @endif
+        </div>
+
+        <!-- New Bio Field -->
+        <div>
+            <x-input-label for="bio" :value="__('Bio')" />
+            <textarea id="bio" name="bio" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                     rows="3">{{ old('bio', $user->bio) }}</textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+        </div>
+
+        <!-- New Avatar Upload -->
+        <div>
+            <x-input-label for="avatar" :value="__('Profile Photo')" />
+            <input id="avatar" name="avatar" type="file" class="mt-1 block w-full text-sm text-gray-600
+                   file:mr-4 file:py-2 file:px-4
+                   file:rounded-md file:border-0
+                   file:text-sm file:font-semibold
+                   file:bg-indigo-50 file:text-indigo-700
+                   hover:file:bg-indigo-100">
+            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+            
+            @if($user->avatar)
+                <div class="mt-2">
+                    <span class="text-sm text-gray-600">{{ __('Current photo:') }}</span>
+                    <img src="{{ asset('storage/'.$user->avatar) }}" class="h-20 w-20 rounded-full object-cover mt-1">
                 </div>
             @endif
         </div>

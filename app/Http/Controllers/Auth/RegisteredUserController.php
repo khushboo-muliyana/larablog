@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
+// for storage
+use Illuminate\Support\Facades\Storage;
+
+
 class RegisteredUserController extends Controller
 {
     /**
@@ -33,13 +37,24 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'username' => ['required', 'string', 'max:25', 'unique:users'],
+            'avatar' => ['nullable', 'image', 'max:2048'], // 2MB max
+
         ]);
+
+
+        $avatarPath = $request->hasFile('avatar')
+        ? $request->file('avatar')->store('avatars', 'public')
+        : null;
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user' // 👈 Add this line to set default role
+            'role' => 'user' ,// 👈 Add this line to set default role
+            'username' => $request->username,
+            'bio' => $request->bio,
+             'avatar' => $avatarPath,
 
         ]);
 
