@@ -17,4 +17,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Only writers can create posts
+Route::get('/posts/create', [PostController::class, 'create'])
+     ->middleware(['auth', 'writer']);
+
+// Only admins can manage users
+Route::get('/admin/users', [UserController::class, 'index'])
+     ->middleware(['auth', 'admin']);
+     
 require __DIR__.'/auth.php';
